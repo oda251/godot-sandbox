@@ -52,3 +52,22 @@ func test_enemy_spawn_policy_negative_average_uses_abs() -> void:
 	var r: Vector2i = EnemySpawnPolicy.value_range(h)
 	assert_int(r.x).is_equal(5)
 	assert_int(r.y).is_equal(20)
+
+
+func test_spawn_lanes_three_on_1152_are_evenly_centered() -> void:
+	var lanes: SpawnLanes = SpawnLanes.new(1152.0, 3)
+	assert_int(lanes.count()).is_equal(3)
+	assert_float(lanes.x_at(0)).is_equal_approx(192.0, 0.001)
+	assert_float(lanes.x_at(1)).is_equal_approx(576.0, 0.001)
+	assert_float(lanes.x_at(2)).is_equal_approx(960.0, 0.001)
+
+
+func test_spawn_lanes_single_lane_is_centered() -> void:
+	var lanes: SpawnLanes = SpawnLanes.new(1000.0, 1)
+	assert_int(lanes.count()).is_equal(1)
+	assert_float(lanes.x_at(0)).is_equal_approx(500.0, 0.001)
+
+
+func test_spawn_lanes_zero_count_is_empty() -> void:
+	var lanes: SpawnLanes = SpawnLanes.new(1000.0, 0)
+	assert_int(lanes.count()).is_equal(0)

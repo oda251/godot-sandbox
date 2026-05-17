@@ -2,7 +2,7 @@ extends Node2D
 
 const NON_PLAYER_SCENE: PackedScene = preload("res://scenes/modes/shooter/non_player.tscn")
 const SCREEN_WIDTH: float = 1152.0
-const SPAWN_MARGIN: float = 60.0
+const LANE_COUNT: int = 3
 
 const SPAWN_WEIGHT_ENEMY: int = 70
 const SPAWN_WEIGHT_ADD: int = 15
@@ -13,6 +13,7 @@ const MUL_VALUE_MAX: int = 3
 
 var _is_game_over: bool = false
 var _power_history: PowerHistory = PowerHistory.new()
+var _lanes: SpawnLanes = SpawnLanes.new(SCREEN_WIDTH, LANE_COUNT)
 
 @onready var player: Player = $Player
 @onready var spawn_timer: Timer = $SpawnTimer
@@ -61,7 +62,7 @@ func _on_spawn_timer_timeout() -> void:
 	var spawned: NonPlayerObject = NON_PLAYER_SCENE.instantiate() as NonPlayerObject
 	if spawned == null:
 		return
-	spawned.position = Vector2(randf_range(SPAWN_MARGIN, SCREEN_WIDTH - SPAWN_MARGIN), -40.0)
+	spawned.position = Vector2(_lanes.random_x(), -40.0)
 	var roll: int = randi_range(0, 99)
 	if roll < SPAWN_WEIGHT_ENEMY:
 		spawned.label = NonPlayerObject.Kind.ENEMY
