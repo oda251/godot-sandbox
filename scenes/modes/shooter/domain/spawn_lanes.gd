@@ -4,12 +4,13 @@ extends RefCounted
 var _xs: Array[float] = []
 
 
-func _init(screen_width: float, lane_count: int) -> void:
-	if lane_count <= 0:
+func _init(center_x: float, span: float, lane_count: int) -> void:
+	if lane_count <= 0 or span <= 0.0:
 		return
-	var slot_width: float = screen_width / float(lane_count)
+	var slot: float = span / float(lane_count)
+	var start: float = center_x - span * 0.5
 	for i: int in range(lane_count):
-		_xs.append(slot_width * (float(i) + 0.5))
+		_xs.append(start + slot * (float(i) + 0.5))
 
 
 func count() -> int:

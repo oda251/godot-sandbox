@@ -3,6 +3,7 @@ extends Node2D
 const NON_PLAYER_SCENE: PackedScene = preload("res://scenes/modes/shooter/non_player.tscn")
 const SCREEN_WIDTH: float = 1152.0
 const LANE_COUNT: int = 3
+const LANE_SPAN: float = SCREEN_WIDTH / 3.0
 
 const SPAWN_WEIGHT_ENEMY: int = 70
 const SPAWN_WEIGHT_ADD: int = 15
@@ -13,7 +14,7 @@ const MUL_VALUE_MAX: int = 3
 
 var _is_game_over: bool = false
 var _power_history: PowerHistory = PowerHistory.new()
-var _lanes: SpawnLanes = SpawnLanes.new(SCREEN_WIDTH, LANE_COUNT)
+var _lanes: SpawnLanes = SpawnLanes.new(SCREEN_WIDTH * 0.5, LANE_SPAN, LANE_COUNT)
 
 @onready var player: Player = $Player
 @onready var spawn_timer: Timer = $SpawnTimer
