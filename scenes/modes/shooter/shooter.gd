@@ -67,7 +67,7 @@ func _avg_power() -> float:
 	if _power_samples.is_empty():
 		return float(player.power)
 	var sum: int = 0
-	for v in _power_samples:
+	for v: int in _power_samples:
 		sum += v
 	return float(sum) / float(_power_samples.size())
 
@@ -93,8 +93,8 @@ func _on_spawn_timer_timeout() -> void:
 
 func _roll_enemy_value() -> int:
 	var base: float = maxf(1.0, absf(_avg_power()))
-	var low: int = maxi(1, int(round(base * ENEMY_RATIO_MIN)))
-	var high: int = maxi(low, int(round(base * ENEMY_RATIO_MAX)))
+	var low: int = maxi(1, roundi(base * ENEMY_RATIO_MIN))
+	var high: int = maxi(low, roundi(base * ENEMY_RATIO_MAX))
 	return randi_range(low, high)
 
 
