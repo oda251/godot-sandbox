@@ -1,0 +1,13 @@
+pre-commit:
+  parallel: true
+  commands:
+    gdlint:
+      glob: "*.gd"
+      exclude:
+        - "addons/**/*"
+      run: mise exec -- gdlint {staged_files}
+    gdformat:
+      glob: "*.gd"
+      exclude:
+        - "addons/**/*"
+      run: mise exec -- gdformat --check {staged_files}

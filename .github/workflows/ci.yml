@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  GODOT_VERSION: 4.6.2
+
+jobs:
+  lint:
+    name: Lint (gdlint + gdformat)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install gdtoolkit
+        run: pip install gdtoolkit==4.5.0
+      - name: gdlint
+        run: find . -name "*.gd" -not -path "./addons/*" -print0 | xargs -0 gdlint
+      - name: gdformat --check
+        run: find . -name "*.gd" -not -path "./addons/*" -print0 | xargs -0 gdformat --check
+
+  godot-check:
+    name: Godot headless check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+      - name: Import project
+        run: godot --headless --quit --import
+      - name: Boot main scene
+        run: godot --headless --quit
+
+  test:
+    name: gdUnit4 tests
+    runs-on: ubuntu-latest
+    needs: godot-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+      - name: Import project
+        run: godot --headless --quit --import
+      - name: Run tests
+        run: godot --headless -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a test/

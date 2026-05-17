@@ -14,5 +14,8 @@ build/
 export.cfg
 export_presets.cfg
 
+# gdUnit4 test reports
+reports/
+
 # macOS / editor cruft
 .DS_Store
