@@ -34,24 +34,50 @@ func test_power_history_drops_oldest_beyond_window() -> void:
 func test_enemy_spawn_policy_empty_history_uses_floor() -> void:
 	var h: PowerHistory = PowerHistory.new()
 	var r: Vector2i = EnemySpawnPolicy.value_range(h)
-	assert_int(r.x).is_equal(1)
-	assert_int(r.y).is_equal(2)
+	# base = 1.0, low = 1 (max(1, 2)), high = 10
+	assert_int(r.x).is_equal(2)
+	assert_int(r.y).is_equal(10)
 
 
 func test_enemy_spawn_policy_positive_average() -> void:
 	var h: PowerHistory = PowerHistory.new()
 	h.snapshot(10)
 	var r: Vector2i = EnemySpawnPolicy.value_range(h)
-	assert_int(r.x).is_equal(5)
-	assert_int(r.y).is_equal(20)
+	# base = 10, low = 15, high = 100
+	assert_int(r.x).is_equal(15)
+	assert_int(r.y).is_equal(100)
 
 
 func test_enemy_spawn_policy_negative_average_uses_abs() -> void:
 	var h: PowerHistory = PowerHistory.new()
 	h.snapshot(-10)
 	var r: Vector2i = EnemySpawnPolicy.value_range(h)
-	assert_int(r.x).is_equal(5)
-	assert_int(r.y).is_equal(20)
+	assert_int(r.x).is_equal(15)
+	assert_int(r.y).is_equal(100)
+
+
+func test_enemy_spawn_policy_roll_stays_in_range() -> void:
+	var h: PowerHistory = PowerHistory.new()
+	h.snapshot(10)
+	var r: Vector2i = EnemySpawnPolicy.value_range(h)
+	for _i: int in range(200):
+		var v: int = EnemySpawnPolicy.roll_value(h)
+		assert_int(v).is_greater_equal(r.x)
+		assert_int(v).is_less_equal(r.y)
+
+
+func test_enemy_spawn_policy_roll_mean_is_low_biased() -> void:
+	# Binomial(10, 0.2) → mean = 2 → normalized t = 0.2
+	# Expected roll mean ≈ low + 0.2 * (high - low) = 15 + 17 = 32
+	# Allow generous tolerance for sampling variance.
+	var h: PowerHistory = PowerHistory.new()
+	h.snapshot(10)
+	var samples: int = 500
+	var total: int = 0
+	for _i: int in range(samples):
+		total += EnemySpawnPolicy.roll_value(h)
+	var mean: float = float(total) / float(samples)
+	assert_float(mean).is_between(24.0, 40.0)
 
 
 func test_spawn_lanes_three_clustered_at_center() -> void:

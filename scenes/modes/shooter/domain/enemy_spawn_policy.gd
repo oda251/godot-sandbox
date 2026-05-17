@@ -1,9 +1,12 @@
 class_name EnemySpawnPolicy
 extends RefCounted
 
-const RATIO_MIN: float = 0.5
-const RATIO_MAX: float = 2.0
+const RATIO_MIN: float = 1.5
+const RATIO_MAX: float = 10.0
 const FLOOR: float = 1.0
+
+const BERNOULLI_TRIALS: int = 10
+const BERNOULLI_P: float = 0.2
 
 
 static func value_range(history: PowerHistory) -> Vector2i:
@@ -15,4 +18,16 @@ static func value_range(history: PowerHistory) -> Vector2i:
 
 static func roll_value(history: PowerHistory) -> int:
 	var r: Vector2i = value_range(history)
-	return randi_range(r.x, r.y)
+	var t: float = _bernoulli_unit()
+	var v: int = roundi(float(r.x) + (float(r.y) - float(r.x)) * t)
+	return clampi(v, r.x, r.y)
+
+
+# Returns a value in [0, 1] drawn from Binomial(n, p) / n.
+# Sum of n independent Bernoulli(p) trials, normalized.
+static func _bernoulli_unit() -> float:
+	var hits: int = 0
+	for _i: int in range(BERNOULLI_TRIALS):
+		if randf() < BERNOULLI_P:
+			hits += 1
+	return float(hits) / float(BERNOULLI_TRIALS)
