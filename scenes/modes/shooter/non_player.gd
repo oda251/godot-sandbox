@@ -1,7 +1,7 @@
 class_name NonPlayerObject
 extends Area2D
 
-enum Label { ENEMY, POWERUP_ADD, POWERUP_MUL }
+enum Kind { ENEMY, POWERUP_ADD, POWERUP_MUL }
 
 const FALL_SPEED: float = 110.0
 const OFFSCREEN_Y: float = 720.0
@@ -9,7 +9,7 @@ const COLOR_ENEMY: Color = Color(0.85, 0.25, 0.3)
 const COLOR_ADD: Color = Color(0.2, 0.55, 0.85)
 const COLOR_MUL: Color = Color(0.9, 0.6, 0.2)
 
-@export var label: Label = Label.ENEMY
+@export var label: Kind = Kind.ENEMY
 @export var value: int = 1
 
 @onready var rect: ColorRect = $Rect
@@ -29,37 +29,37 @@ func _process(delta: float) -> void:
 
 func contact_with_player(player: Player) -> void:
 	match label:
-		Label.ENEMY:
+		Kind.ENEMY:
 			player.take_damage(value)
-		Label.POWERUP_ADD:
+		Kind.POWERUP_ADD:
 			player.power += value
-		Label.POWERUP_MUL:
+		Kind.POWERUP_MUL:
 			player.power *= value
 	queue_free()
 
 
 func hit_by_bullet(damage: int) -> void:
 	match label:
-		Label.ENEMY:
+		Kind.ENEMY:
 			value -= damage
 			if value <= 0:
 				queue_free()
 			else:
 				_refresh_visual()
-		Label.POWERUP_ADD, Label.POWERUP_MUL:
+		Kind.POWERUP_ADD, Kind.POWERUP_MUL:
 			value += 1
 			_refresh_visual()
 
 
 func _refresh_visual() -> void:
 	match label:
-		Label.ENEMY:
+		Kind.ENEMY:
 			rect.color = COLOR_ENEMY
 			text_label.text = "E:%d" % value
-		Label.POWERUP_ADD:
+		Kind.POWERUP_ADD:
 			rect.color = COLOR_ADD
 			text_label.text = "%+d" % value
-		Label.POWERUP_MUL:
+		Kind.POWERUP_MUL:
 			rect.color = COLOR_MUL
 			text_label.text = "x%d" % value
 

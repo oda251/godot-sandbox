@@ -39,26 +39,6 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 
-[node name="Demo2DButton" type="Button" parent="Center/VBox"]
-custom_minimum_size = Vector2(240, 44)
-layout_mode = 2
-text = "2D Demo"
-
-[node name="Demo3DButton" type="Button" parent="Center/VBox"]
-custom_minimum_size = Vector2(240, 44)
-layout_mode = 2
-text = "3D Demo"
-
-[node name="PhysicsButton" type="Button" parent="Center/VBox"]
-custom_minimum_size = Vector2(240, 44)
-layout_mode = 2
-text = "Physics Sandbox"
-
-[node name="UIShowcaseButton" type="Button" parent="Center/VBox"]
-custom_minimum_size = Vector2(240, 44)
-layout_mode = 2
-text = "UI Showcase"
-
 [node name="ShooterButton" type="Button" parent="Center/VBox"]
 custom_minimum_size = Vector2(240, 44)
 layout_mode = 2
@@ -91,9 +71,5 @@ text = "v0.1.0"
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.5)
 
-[connection signal="pressed" from="Center/VBox/Demo2DButton" to="." method="_on_demo_2d_pressed"]
-[connection signal="pressed" from="Center/VBox/Demo3DButton" to="." method="_on_demo_3d_pressed"]
-[connection signal="pressed" from="Center/VBox/PhysicsButton" to="." method="_on_physics_pressed"]
-[connection signal="pressed" from="Center/VBox/UIShowcaseButton" to="." method="_on_ui_showcase_pressed"]
 [connection signal="pressed" from="Center/VBox/ShooterButton" to="." method="_on_shooter_pressed"]
 [connection signal="pressed" from="Center/VBox/QuitButton" to="." method="_on_quit_pressed"]

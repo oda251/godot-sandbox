@@ -20,19 +20,35 @@ var _is_game_over: bool = false
 @onready var hud_power: Label = $HUD/PowerLabel
 @onready var game_over_panel: Control = $HUD/GameOverPanel
 @onready var final_label: Label = $HUD/GameOverPanel/Center/VBox/FinalScore
+@onready var pause_panel: Control = $HUD/PausePanel
 
 
 func _ready() -> void:
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	game_over_panel.visible = false
+	pause_panel.visible = false
 
 
 func _process(_delta: float) -> void:
-	if _is_game_over:
+	if _is_game_over or get_tree().paused:
 		return
 	hud_power.text = "POWER: %d" % player.power
 	if player.power <= 0:
 		_game_over()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _is_game_over:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_toggle_pause()
+		get_viewport().set_input_as_handled()
+
+
+func _toggle_pause() -> void:
+	var should_pause: bool = not get_tree().paused
+	get_tree().paused = should_pause
+	pause_panel.visible = should_pause
 
 
 func _on_spawn_timer_timeout() -> void:
@@ -42,13 +58,13 @@ func _on_spawn_timer_timeout() -> void:
 	spawned.position = Vector2(randf_range(SPAWN_MARGIN, SCREEN_WIDTH - SPAWN_MARGIN), -40.0)
 	var roll: int = randi_range(0, 99)
 	if roll < SPAWN_WEIGHT_ENEMY:
-		spawned.label = NonPlayerObject.Label.ENEMY
+		spawned.label = NonPlayerObject.Kind.ENEMY
 		spawned.value = randi_range(ENEMY_VALUE_MIN, ENEMY_VALUE_MAX)
 	elif roll < SPAWN_WEIGHT_ENEMY + SPAWN_WEIGHT_ADD:
-		spawned.label = NonPlayerObject.Label.POWERUP_ADD
+		spawned.label = NonPlayerObject.Kind.POWERUP_ADD
 		spawned.value = randi_range(ADD_VALUE_MIN, ADD_VALUE_MAX)
 	else:
-		spawned.label = NonPlayerObject.Label.POWERUP_MUL
+		spawned.label = NonPlayerObject.Kind.POWERUP_MUL
 		spawned.value = randi_range(MUL_VALUE_MIN, MUL_VALUE_MAX)
 	add_child(spawned)
 
@@ -70,3 +86,14 @@ func _on_back_pressed() -> void:
 	var err: Error = get_tree().change_scene_to_file("res://scenes/start_screen.tscn")
 	if err != OK:
 		push_error("Back failed: %d" % err)
+
+
+func _on_pause_resume_pressed() -> void:
+	_toggle_pause()
+
+
+func _on_pause_quit_pressed() -> void:
+	get_tree().paused = false
+	var err: Error = get_tree().change_scene_to_file("res://scenes/start_screen.tscn")
+	if err != OK:
+		push_error("Quit to menu failed: %d" % err)
