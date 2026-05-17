@@ -33,6 +33,14 @@ func take_damage(amount: int) -> void:
 	power -= amount
 
 
+func add_power(amount: int) -> void:
+	power += amount
+
+
+func multiply_power(factor: int) -> void:
+	power *= factor
+
+
 func _shoot() -> void:
 	var bullet: Bullet = BULLET_SCENE.instantiate() as Bullet
 	if bullet == null:

@@ -35,9 +35,9 @@ func contact_with_player(player: Player) -> void:
 		Kind.ENEMY:
 			player.take_damage(value)
 		Kind.POWERUP_ADD:
-			player.power += value
+			player.add_power(value)
 		Kind.POWERUP_MUL:
-			player.power *= value
+			player.multiply_power(value)
 	queue_free()
 
 

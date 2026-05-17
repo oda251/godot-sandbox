@@ -11,12 +11,8 @@ const ADD_VALUE_MAX: int = 5
 const MUL_VALUE_MIN: int = -2
 const MUL_VALUE_MAX: int = 3
 
-const ENEMY_RATIO_MIN: float = 0.5
-const ENEMY_RATIO_MAX: float = 2.0
-const POWER_SAMPLE_WINDOW: int = 10
-
 var _is_game_over: bool = false
-var _power_samples: Array[int] = []
+var _power_history: PowerHistory = PowerHistory.new()
 
 @onready var player: Player = $Player
 @onready var spawn_timer: Timer = $SpawnTimer
@@ -32,7 +28,7 @@ func _ready() -> void:
 	sample_timer.timeout.connect(_on_sample_timer_timeout)
 	game_over_panel.visible = false
 	pause_panel.visible = false
-	_power_samples.append(player.power)
+	_power_history.snapshot(player.power)
 
 
 func _process(_delta: float) -> void:
@@ -58,18 +54,7 @@ func _toggle_pause() -> void:
 
 
 func _on_sample_timer_timeout() -> void:
-	_power_samples.append(player.power)
-	while _power_samples.size() > POWER_SAMPLE_WINDOW:
-		_power_samples.pop_front()
-
-
-func _avg_power() -> float:
-	if _power_samples.is_empty():
-		return float(player.power)
-	var sum: int = 0
-	for v: int in _power_samples:
-		sum += v
-	return float(sum) / float(_power_samples.size())
+	_power_history.snapshot(player.power)
 
 
 func _on_spawn_timer_timeout() -> void:
@@ -80,7 +65,7 @@ func _on_spawn_timer_timeout() -> void:
 	var roll: int = randi_range(0, 99)
 	if roll < SPAWN_WEIGHT_ENEMY:
 		spawned.label = NonPlayerObject.Kind.ENEMY
-		spawned.value = _roll_enemy_value()
+		spawned.value = EnemySpawnPolicy.roll_value(_power_history)
 	elif roll < SPAWN_WEIGHT_ENEMY + SPAWN_WEIGHT_ADD:
 		spawned.label = NonPlayerObject.Kind.POWERUP_ADD
 		spawned.value = randi_range(ADD_VALUE_MIN, ADD_VALUE_MAX)
@@ -89,13 +74,6 @@ func _on_spawn_timer_timeout() -> void:
 		spawned.value = randi_range(MUL_VALUE_MIN, MUL_VALUE_MAX)
 	spawned.player_damaged.connect(player.take_damage)
 	add_child(spawned)
-
-
-func _roll_enemy_value() -> int:
-	var base: float = maxf(1.0, absf(_avg_power()))
-	var low: int = maxi(1, roundi(base * ENEMY_RATIO_MIN))
-	var high: int = maxi(low, roundi(base * ENEMY_RATIO_MAX))
-	return randi_range(low, high)
 
 
 func _game_over() -> void:
