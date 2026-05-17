@@ -1,6 +1,8 @@
 class_name NonPlayerObject
 extends Area2D
 
+signal player_damaged(amount: int)
+
 enum Kind { ENEMY, POWERUP_ADD, POWERUP_MUL }
 
 const FALL_SPEED: float = 110.0
@@ -24,6 +26,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	position.y += FALL_SPEED * delta
 	if position.y > OFFSCREEN_Y:
+		on_exit_bottom()
 		queue_free()
 
 
@@ -36,6 +39,14 @@ func contact_with_player(player: Player) -> void:
 		Kind.POWERUP_MUL:
 			player.power *= value
 	queue_free()
+
+
+func on_exit_bottom() -> void:
+	match label:
+		Kind.ENEMY:
+			player_damaged.emit(value)
+		Kind.POWERUP_ADD, Kind.POWERUP_MUL:
+			pass
 
 
 func hit_by_bullet(damage: int) -> void:
