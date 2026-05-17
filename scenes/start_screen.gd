@@ -17,6 +17,10 @@ func _on_ui_showcase_pressed() -> void:
 	_change_to("res://scenes/modes/ui_showcase.tscn")
 
 
+func _on_shooter_pressed() -> void:
+	_change_to("res://scenes/modes/shooter/shooter.tscn")
+
+
 func _on_quit_pressed() -> void:
 	get_tree().quit()
 

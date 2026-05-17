@@ -1,0 +1,111 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/modes/shooter/shooter.gd" id="1_shooter"]
+[ext_resource type="PackedScene" path="res://scenes/modes/shooter/player.tscn" id="2_player"]
+
+[node name="Shooter" type="Node2D"]
+script = ExtResource("1_shooter")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.06, 0.07, 0.12, 1)
+mouse_filter = 2
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(576, 580)
+
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 1.1
+autostart = true
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="PowerLabel" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 360.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 24
+text = "POWER: 10"
+
+[node name="Hints" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 612.0
+offset_right = 600.0
+offset_bottom = 640.0
+theme_override_font_sizes/font_size = 14
+text = "←/→ move    SPACE fire    shoot powerups to raise their coefficient"
+modulate = Color(1, 1, 1, 0.6)
+
+[node name="Legend" type="Label" parent="HUD"]
+offset_left = 800.0
+offset_top = 16.0
+offset_right = 1140.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 14
+text = "E:N  enemy (HP/ATK = N)
++N   add to power
+xN   multiply power"
+modulate = Color(1, 1, 1, 0.7)
+
+[node name="GameOverPanel" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Dim" type="ColorRect" parent="HUD/GameOverPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/GameOverPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/GameOverPanel/Center"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="HUD/GameOverPanel/Center/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="FinalScore" type="Label" parent="HUD/GameOverPanel/Center/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Final Power: 0"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="HUD/GameOverPanel/Center/VBox"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="RestartButton" type="Button" parent="HUD/GameOverPanel/Center/VBox"]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+text = "Restart"
+
+[node name="BackButton" type="Button" parent="HUD/GameOverPanel/Center/VBox"]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+text = "← Back to Menu"
+
+[connection signal="pressed" from="HUD/GameOverPanel/Center/VBox/RestartButton" to="." method="_on_restart_pressed"]
+[connection signal="pressed" from="HUD/GameOverPanel/Center/VBox/BackButton" to="." method="_on_back_pressed"]
